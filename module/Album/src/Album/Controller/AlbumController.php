@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Zend Framework (http://framework.zend.com/)
  *
@@ -6,29 +7,42 @@
  * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
-
 namespace Album\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Album\Model\Album;
+use Album\Form\AlbumForm;
 
-class AlbumController extends AbstractActionController
-{
-    public function indexAction()
-    {
-    }
-
-    public function addAction()
-    {
-    }
-
-    public function editAction()
-    {
-    }
-
-    public function deleteAction()
-    {
-    }
+class AlbumController extends AbstractActionController {
+	public function indexAction() {
+	}
+	public function addAction() {
+		$form = new AlbumForm ();
+		$form->get ( 'submit' )->setValue ( 'Add' );
+		
+		$request = $this->getRequest ();
+		if ($request->isPost ()) {
+			$album = new Album ();
+			$form->setInputFilter ( $album->getInputFilter () );
+			$form->setData ( $request->getPost () );
+			
+			if ($form->isValid ()) {
+				$album->exchangeArray ( $form->getData () );
+				$this->getAlbumTable ()->saveAlbum ( $album );
+				
+				// Redirect to list of albums
+				return $this->redirect ()->toRoute ( 'album' );
+			}
+		}
+		return array (
+				'form' => $form 
+		);
+	}
+	public function editAction() {
+	}
+	public function deleteAction() {
+	}
 }
 // namespace Album\Controller;
 
